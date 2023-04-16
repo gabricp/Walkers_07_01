@@ -27,6 +27,7 @@ public class ScMinionAI_Near : MonoBehaviour {
     public List<gameElement> Teammates_list;
     public List<gameElement> opponents_list;
 
+
     // Use this for initialization
     /// <summary>
     /// ///////////  ARTIFICIAL INTELLIGENCE  MINION Script 
@@ -39,7 +40,6 @@ public class ScMinionAI_Near : MonoBehaviour {
 
         // We access to the general object "Game"
         Game = GameObject.FindWithTag("Game");
-
         date_lastChamge = DateTime.Now; // We initialize the date value
         periodMilisec = 1000f;  // We change each "periodoMiliseg"/1000 seconds
 
@@ -47,8 +47,8 @@ public class ScMinionAI_Near : MonoBehaviour {
         minionsMovUnits = 1f; // We initialize the date value
 
         // if we are team near: (if you are not, comment these two lines)
-        Teammates_list = Game.GetComponent<ScGameGlobalData>().listTeam_Near;
-        opponents_list = Game.GetComponent<ScGameGlobalData>().listTeam_Far;
+        Teammates_list = Game.GetComponent<ScGameGlobalData>().listTeam_Far;
+        opponents_list = Game.GetComponent<ScGameGlobalData>().listTeam_Near;
 
         // if we are team far: (if you are not, comment these two lines)
 //        Teammates_list = Game.GetComponent<ScGameGlobalData>().listTeam_Far;
@@ -124,6 +124,8 @@ public class ScMinionAI_Near : MonoBehaviour {
         // Every "timeWhitoutChange_ms" milliseconds we modify the value of "movement" and "minionsMovUnits"
         DateTime dateNow = DateTime.Now; 
         TimeSpan timeWhitoutChange = dateNow - date_lastChamge;
+        float move_x = 0.0f; //Definimos a cero el movimiento para evitar que de problemas
+        float move_z = 0.0f;
 
         double timeWhitoutChange_ms = timeWhitoutChange.TotalMilliseconds;
         if (timeWhitoutChange_ms > periodMilisec)
@@ -132,7 +134,9 @@ public class ScMinionAI_Near : MonoBehaviour {
             {
                 if (element_oponent.giveToMeTag() == "Player")
                 {
-                    Debug.Log("Jugador encontrado");
+                    Vector3 posicion = element_oponent.giveToMePosition();
+                    move_x = posicion.x - transform.position.x;
+                    move_z = posicion.z - transform.position.z;
                 }
             }
             // We calculate the direction and quantity of movement
@@ -142,7 +146,7 @@ public class ScMinionAI_Near : MonoBehaviour {
             float minionsMovUnits = Random.Range(0.0f, 1f);
 
             minionsMovUnits = minionsMovUnits * ScGameGlobalData.maxMinionsMovUnits;
-            movement = new Vector3(move_X, 0.0f, move_Z);
+            movement = new Vector3(move_x, 0.0f, move_z);
 
             date_lastChamge = dateNow;  // We actualizate date_lastChamge
         }

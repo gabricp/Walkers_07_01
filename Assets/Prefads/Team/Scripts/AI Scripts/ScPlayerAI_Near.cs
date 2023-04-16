@@ -17,6 +17,7 @@ using Random = UnityEngine.Random;
 public class ScPlayerAI_Near : MonoBehaviour {
 
     public GameObject Game;  // To access to the general object "Game"
+    public GameObject itself;
 
     DateTime date_lastChamge;
     protected double periodMilisec;
@@ -26,6 +27,7 @@ public class ScPlayerAI_Near : MonoBehaviour {
 
     public List<gameElement> Teammates_list;
     public List<gameElement> opponents_list;
+    public List<gameElement> profits_list;
 
     /// <summary>
     /// ///////////  ARTIFICIAL INTELLIGENCE  MINION Script 
@@ -48,11 +50,19 @@ public class ScPlayerAI_Near : MonoBehaviour {
         // if we are team near: (if you are not, comment these two lines)
         Teammates_list = Game.GetComponent<ScGameGlobalData>().listTeam_Near;
         opponents_list = Game.GetComponent<ScGameGlobalData>().listTeam_Far;
+        profits_list = Game.GetComponent<ScGameGlobalData>().listProfits;
 
         // if we are team far: (if you are not, comment these two lines)
-//        Teammates_list = Game.GetComponent<ScGameGlobalData>().listTeam_Far;
-//        opponents_list = Game.GetComponent<ScGameGlobalData>().listTeam_Near;
+        //        Teammates_list = Game.GetComponent<ScGameGlobalData>().listTeam_Far;
+        //        opponents_list = Game.GetComponent<ScGameGlobalData>().listTeam_Near;
 
+        //Buscamos el player propio y lo asignamos a itself
+        foreach (gameElement gameel in Teammates_list)
+        {
+            if (gameel.giveToMeTag() == "Player"){
+                float i = 0;
+            }
+        }
     }  // FIn de - void Start()
 
     // Update is called once per frame
@@ -161,7 +171,26 @@ public class ScPlayerAI_Near : MonoBehaviour {
         } // Fin de - else if (ScGameGlobalData.player_near_mode == "randon")
         else if (Game.GetComponent<ScGameGlobalData>().player_near_mode == "NPC")
         {
-            Debug.Log("From ScPlayerAI_Near => FixedUpdate => AI is not programated");
+            float distancia = 1000000;
+            float move_X = 0.0f;
+            float move_Z = 0.0f;
+            foreach (gameElement elemento in profits_list)
+            {
+                Vector3 direccion = new Vector3(elemento.giveToMePosition().x - transform.position.x, elemento.giveToMePosition().y - transform.position.y, elemento.giveToMePosition().z - transform.position.z);
+                Debug.Log(direccion.x);
+
+                if (direccion.x + direccion.y + direccion.z < distancia)
+                {
+                    move_X = direccion.x;
+                    move_Z = direccion.z;
+                    playersMovUnits = Random.Range(0.0f, 1f);
+                    distancia = direccion.x + direccion.y + direccion.z;
+                }
+            }
+            playersMovUnits = playersMovUnits * ScGameGlobalData.maxPlayersMovUnits;
+            movement = new Vector3(move_X, 0.0f, move_Z);
+            date_lastChamge = dateNow;
+
         }// Fin de - else if (ScGameGlobalData.Team_Near_Control == "NPC")
         else { Debug.Log("From ScPlayerAI_Near => FixedUpdate => Error 001"); }
 
